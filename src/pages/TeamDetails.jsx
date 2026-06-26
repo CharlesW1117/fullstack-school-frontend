@@ -1,36 +1,61 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { getTeam } from "../api/teams";
+import { getMutants } from "../api/mutants";
 
 export default function TeamDetails() {
   const { id } = useParams();
+  const [team, setTeam] = useState(null);
+  const [error, setError] = useState(null);
 
-  const team = {
-    id,
-    name: "X‑Men",
-    description:
-      "A team of mutants dedicated to peaceful coexistence between humans and mutants.",
-    base: "Xavier's Mansion",
-    image: "https://upload.wikimedia.org/wikipedia/en/3/35/X-Men_Logo.svg",
-    mutants: ["Wolverine", "Storm", "Cyclops", "Jean Grey"],
-  };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const teamData = await getTeam(id);
+        const allMutants = await getMutants();
+        const teamMutants = allMutants.filter((m) => m.team_id === teamData.id);
+        setTeam({ ...teamData, mutants: teamMutants });
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load team details.");
+      }
+    }
+    fetchData();
+  }, [id]);
+
+  if (error) return <h2>{error}</h2>;
+  if (!team) return <h2>Loading team details...</h2>;
 
   return (
     <div className="page">
       <h1>{team.name}</h1>
-      <img src={team.image} alt={team.name} />
+      <img
+        src={team.image_url}
+        alt={team.name}
+        style={{ width: 400, borderRadius: 8 }}
+      />
       <p>
-        <strong>Base of Operations:</strong> {team.base}
+        <strong>Description:</strong> {team.description}
       </p>
-      <p>{team.description}</p>
+      <p>
+        <strong>Base:</strong> {team.base_of_operations}
+      </p>
 
       <h2>Mutants in this Team</h2>
-      <ul>
-        {team.mutants.map((name) => (
-          <li key={name}>
-            <Link to={`/mutants/${name.toLowerCase()}`}>{name}</Link>
-          </li>
-        ))}
-      </ul>
+      {team.mutants.length ? (
+        <ul>
+          {team.mutants.map((m) => (
+            <li key={m.id}>
+              <Link to={`/mutants/${m.id}`}>{m.alias}</Link> — {m.name} (
+              {m.status})
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No mutants found for this team.</p>
+      )}
+
+      <Link to="/teams">← Back to Teams</Link>
     </div>
   );
 }
