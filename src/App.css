@@ -169,3 +169,28 @@ footer {
   color: #ffd700;
   text-shadow: 0 0 10px #ffd700;
 }
+
+.page {
+  padding: 20px;
+  text-align: center;
+}
+
+.grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  background: #1f2833;
+  color: #f8f8f8;
+  border-radius: 8px;
+  padding: 15px;
+  width: 220px;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 6px;
+}

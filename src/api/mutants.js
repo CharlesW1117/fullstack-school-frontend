@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 // conection
 const API = import.meta.env.VITE_API;
@@ -48,3 +49,9 @@ export async function deleteMutant(id, token) {
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+=======
+import { request } from "./client";
+
+export const getMutants = () => request("/mutants", { method: "GET" });
+export const getMutant = (id) => request(`/mutants/${id}`, { method: "GET" });
+>>>>>>> b3e02669d8d9c5b1fcb35b331ebda3975ea6e4f3
